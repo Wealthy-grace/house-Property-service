@@ -1,16 +1,17 @@
-package com.example.userservice.configuration.exceptions;
-import java.util.HashMap;
-import java.util.Map;
-import com.example.userservice.configuration.exceptions.UserNotFoundException;
+package com.example.propertyservice.exception;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -26,16 +27,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+    @ExceptionHandler(PropertyAlreadyExistsException.class)
+    public ResponseEntity<Map<String, Object>> handleUserAlreadyExists(PropertyAlreadyExistsException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("status", 409);
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
+    @ExceptionHandler(PropertyNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleUserNotFound(PropertyNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", ex.getMessage());
         response.put("status", 404);

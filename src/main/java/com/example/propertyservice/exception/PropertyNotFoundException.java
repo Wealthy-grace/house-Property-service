@@ -1,7 +1,7 @@
-package com.example.userservice.configuration.exceptions;
+package com.example.propertyservice.exception;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
+public class PropertyNotFoundException extends RuntimeException {
+    public PropertyNotFoundException(String message) {
         super(message);
     }
 }

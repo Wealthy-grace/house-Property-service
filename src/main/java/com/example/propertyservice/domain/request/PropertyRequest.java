@@ -1,6 +1,9 @@
 package com.example.propertyservice.domain.request;
 
 import com.example.propertyservice.persistence.model.HouseType;
+import com.example.propertyservice.persistence.model.LocationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +16,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PropertRequest {
+public class PropertyRequest {
 
     @NotBlank(message = "Property title is required")
     @Size(min = 5, max = 200, message = "Title must be between 5 and 200 characters")
@@ -23,9 +26,13 @@ public class PropertRequest {
     @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
 
-    @NotNull(message = "Property type is required")
+    @Enumerated(EnumType.STRING)
     private HouseType propertyType;
 
+    @NotNull(message = "Quantity is required")
+    private Integer quantity;
+    @Enumerated(EnumType.STRING)
+    private LocationType locationType;
     @NotNull(message = "Rent amount is required")
     @DecimalMin(value = "100.0", message = "Rent must be at least €100")
     @DecimalMax(value = "5000.0", message = "Rent cannot exceed €5000")
@@ -38,19 +45,30 @@ public class PropertRequest {
     @NotBlank(message = "Street address is required")
     private String streetAddress;
 
-    @NotBlank(message = "City is required")
-    private String city;
+    @NotBlank(message = "Rental condition is required")
+    private String rentalcondition;
+    @NotBlank(message = "Surface area is required")
+    private String  surfaceArea;
 
     @NotBlank(message = "Postal code is required")
     @Pattern(regexp = "\\d{4}[A-Z]{2}", message = "Invalid Dutch postal code format")
     private String postalCode;
-
-    @NotBlank(message = "Province is required")
-    private String province;
-
+@NotBlank(message = "Available date is required")
+    private String interior;
+    @NotBlank(message = "Available date is required")
+    private String availableDate;
 
 
     @Min(value = 1, message = "Number of bedrooms must be at least 1")
     @Max(value = 10, message = "Number of bedrooms cannot exceed 10")
     private Integer bedrooms;
+
+    @NotBlank(message = "Image is required")
+    private String image;
+    @NotBlank(message = "Image1 is required")
+    private String image2;
+    @NotBlank(message = "Image2 is required")
+    private String image3;
+    @NotBlank(message = "Image3 is required")
+    private String image4;
 }
