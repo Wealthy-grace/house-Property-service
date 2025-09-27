@@ -62,7 +62,7 @@ sonar {
         property "sonar.projectName", "Property Service"
         property "sonar.host.url", "http://localhost:9000"
         property "sonar.login", "admin"
-        property "sonar.password", "admin"
+        property "sonar.password", "Godfreygrace10@"
         property "sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.java.coveragePlugin", "jacoco"
         property "sonar.coverage.exclusions", "**/config/**,**/dto/**,**/entity/**,**/exception/**"

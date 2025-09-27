@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -346,52 +347,149 @@ public class PropertyServiceIntegrationTest {
 
 
 
+    // Add these helper methods to your PropertyServiceIntegrationTest class
+
+    /**
+     * Helper method to create a PropertyEntity with all required fields
+     */
+    private PropertyEntity createTestProperty(String title, String address, BigDecimal rentAmount,
+                                              HouseType houseType, LocationType locationType,
+                                              String description, String rentalCondition) {
+        PropertyEntity property = new PropertyEntity();
+        property.setTitle(title);
+        property.setAddress(address);
+        property.setRentAmount(rentAmount);
+        property.setHouseType(houseType);
+        property.setLocationType(locationType);
+        property.setDescription(description);
+        property.setRentalcondition(rentalCondition);
+        return property;
+    }
+
+    /**
+     * Helper method to create and save a test property
+     */
+    private PropertyEntity createAndSaveTestProperty(String title, String address, BigDecimal rentAmount,
+                                                     HouseType houseType, LocationType locationType,
+                                                     String description, String rentalCondition) {
+        PropertyEntity property = createTestProperty(title, address, rentAmount, houseType,
+                locationType, description, rentalCondition);
+        return propertyRepository.save(property);
+    }
+
+// Now your tests can be simplified:
+
     @Test
     void getPropertiesByLocationType_Success() {
-        List<PropertyDto> response = propertyService.getPropertiesByLocation("TILBURG");
+        // Given - Clear existing data and create specific test data
+        propertyRepository.deleteAll();
 
+        // Create 2 properties with TILBURG location type
+        createAndSaveTestProperty(
+                "Urban Villa",
+                "123 Urban Street, TILBURG",
+                BigDecimal.valueOf(500000.00),
+                HouseType.Residential_House,
+                LocationType.TILBURG,
+                "An urban villa",
+                "Available immediately. No pets allowed."
+        );
+
+        createAndSaveTestProperty(
+                "Urban Apartment",
+                "456 Urban Avenue, TILBURG",
+                BigDecimal.valueOf(300000.00),
+                HouseType.Apartment,
+                LocationType.TILBURG,
+                "An urban apartment",
+                "Available from next month. Pets allowed."
+        );
+
+        // Create 1 property with different location type for comparison
+        createAndSaveTestProperty(
+                "Rural House",
+                "789 Rural Road",
+                BigDecimal.valueOf(400000.00),
+                HouseType.Studio,
+                LocationType.VELDHOVEN,
+                "A rural house",
+                "Long term rental only."
+        );
+
+        // When
+        List<PropertyDto> response = propertyService.getPropertiesByLocation(LocationType.TILBURG.toString());
+
+        // Then
         assertNotNull(response);
-        assertEquals(2, response.size()); // Fix: Expect 2 results since you have 2 TILBURG properties
+        assertEquals(2, response.size(), "Should find exactly 2 properties with TILBURG location type");
 
-        // Fix: Check that one of the properties is the existing property
-        boolean foundExistingProperty = response.stream()
-                .anyMatch(property -> "Existing Property".equals(property.getTitle()));
-        assertTrue(foundExistingProperty);
+        assertTrue(response.stream().allMatch(property ->
+                        LocationType.TILBURG.equals(property.getLocationType())),
+                "All properties should have TILBURG location type");
 
-        // Fix: Verify the existing property details
-        PropertyDto existingPropertyDto = response.stream()
-                .filter(property -> "Existing Property".equals(property.getTitle()))
-                .findFirst()
-                .orElse(null);
+        List<String> propertyNames = response.stream()
+                .map(PropertyDto::getTitle)
+                .collect(Collectors.toList());
 
-        assertNotNull(existingPropertyDto);
-        assertEquals(existingProperty.getId(), existingPropertyDto.getId());
-        assertEquals("Existing Property", existingPropertyDto.getTitle());
+        assertTrue(propertyNames.contains("Urban Villa"), "Should contain Urban Villa");
+        assertTrue(propertyNames.contains("Urban Apartment"), "Should contain Urban Apartment");
     }
 
     @Test
     void getPropertiesByHouseType_Success() {
-        List<PropertyDto> response = propertyService.getPropertiesByHouseType("Apartment");
+        // Given - Clear existing data and create specific test data
+        propertyRepository.deleteAll();
 
+        // Create 2 Apartment properties
+        createAndSaveTestProperty(
+                "Downtown Apartment",
+                "123 City Center",
+                BigDecimal.valueOf(250000.00),
+                HouseType.Apartment,
+                LocationType.VELDHOVEN,
+                "A downtown apartment",
+                "Modern apartment with city view."
+        );
+
+        createAndSaveTestProperty(
+                "Suburban Apartment",
+                "456 Suburb Lane",
+                BigDecimal.valueOf(200000.00),
+                HouseType.Apartment,
+                LocationType.TILBURG,
+                "A suburban apartment",
+                "Quiet neighborhood, parking included."
+        );
+
+        // Create 1 Villa for comparison
+        createAndSaveTestProperty(
+                "Luxury Villa",
+                "789 Villa Street",
+                BigDecimal.valueOf(800000.00),
+                HouseType.Residential_House,
+                LocationType.TILBURG,
+                "A luxury villa",
+                "Luxury property with garden and pool."
+        );
+
+        // When
+        List<PropertyDto> response = propertyService.getPropertiesByHouseType(HouseType.Apartment.toString());
+
+        // Then
         assertNotNull(response);
-        assertEquals(2, response.size()); // Fix: Expect 2 results since you have 2 apartment properties
+        assertEquals(2, response.size(), "Should find exactly 2 apartment properties");
 
-        // Fix: Check that one of the properties is the existing property
-        boolean foundExistingProperty = response.stream()
-                .anyMatch(property -> "Existing Property".equals(property.getTitle()));
-        assertTrue(foundExistingProperty);
+        assertTrue(response.stream().allMatch(property ->
+                        HouseType.Apartment.equals(property.getHouseType())),
+                "All properties should be apartments");
 
-        // Fix: Verify the existing property details
-        PropertyDto existingPropertyDto = response.stream()
-                .filter(property -> "Existing Property".equals(property.getTitle()))
-                .findFirst()
-                .orElse(null);
+        List<String> propertyNames = response.stream()
+                .map(PropertyDto::getTitle)
+                .collect(Collectors.toList());
 
-        assertNotNull(existingPropertyDto);
-        assertEquals(existingProperty.getId(), existingPropertyDto.getId());
-        assertEquals("Existing Property", existingPropertyDto.getTitle());
+        assertTrue(propertyNames.contains("Downtown Apartment"), "Should contain Downtown Apartment");
+        assertTrue(propertyNames.contains("Suburban Apartment"), "Should contain Suburban Apartment");
     }
-
     @Test
     void getPropertiesByLocationType_InvalidLocation_ReturnsEmptyList() {
         List<PropertyDto> response = propertyService.getPropertiesByLocation("INVALID_LOCATION");
