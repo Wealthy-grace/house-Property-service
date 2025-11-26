@@ -26,13 +26,18 @@ public class PropertyRequest {
     @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
 
+    @NotNull(message = "Property type is required")
     @Enumerated(EnumType.STRING)
     private HouseType propertyType;
 
     @NotNull(message = "Quantity is required")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private Integer quantity;
+
+    @NotNull(message = "Location type is required")
     @Enumerated(EnumType.STRING)
     private LocationType locationType;
+
     @NotNull(message = "Rent amount is required")
     @DecimalMin(value = "100.0", message = "Rent must be at least €100")
     @DecimalMax(value = "5000.0", message = "Rent cannot exceed €5000")
@@ -47,28 +52,43 @@ public class PropertyRequest {
 
     @NotBlank(message = "Rental condition is required")
     private String rentalcondition;
+
     @NotBlank(message = "Surface area is required")
-    private String  surfaceArea;
+    private String surfaceArea;
+
+    @Builder.Default
+    private Boolean propertyIsRented = false;
 
     @NotBlank(message = "Postal code is required")
     @Pattern(regexp = "\\d{4}[A-Z]{2}", message = "Invalid Dutch postal code format")
     private String postalCode;
-@NotBlank(message = "Available date is required")
+
+    @NotBlank(message = "Interior description is required")
     private String interior;
+
     @NotBlank(message = "Available date is required")
     private String availableDate;
 
-
+    @NotNull(message = "Number of bedrooms is required")
     @Min(value = 1, message = "Number of bedrooms must be at least 1")
     @Max(value = 10, message = "Number of bedrooms cannot exceed 10")
     private Integer bedrooms;
 
+    // Optional field
+    private Integer numberOfRooms;
+
+    // Optional field - can be set by admin
+    private String condition;
+
     @NotBlank(message = "Image is required")
     private String image;
+
     @NotBlank(message = "Image1 is required")
     private String image2;
+
     @NotBlank(message = "Image2 is required")
     private String image3;
+
     @NotBlank(message = "Image3 is required")
     private String image4;
 }

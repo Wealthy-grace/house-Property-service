@@ -1,4 +1,4 @@
-package com.example.propertyservice.business;
+package com.example.propertyservice.business.impl;
 
 
 import com.example.propertyservice.business.interfaces.PropertyService;
@@ -15,6 +15,8 @@ import com.example.propertyservice.persistence.model.PropertyEntity;
 import com.example.propertyservice.persistence.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
+@CacheConfig(cacheNames = "properties")
 public class PropertyServiceImpl implements PropertyService {
 
     private final PropertyRepository propertyRepository;
@@ -53,6 +56,7 @@ public class PropertyServiceImpl implements PropertyService {
                 .image2(property.getImage2())
                 .image3(property.getImage3())
                 .image4(property.getImage4())
+                .propertyIsRented(property.isRented())
                 .build();
     }
 
@@ -60,7 +64,7 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertyResponse updateProperty(PropertyRequest propertyRequest, Long id) {
         log.info("Updating property with ID: {}", id);
 
-        if (!propertyRepository.existsById(String.valueOf(id))) {
+        if (!propertyRepository.existsById((id))) {
             throw new PropertyNotFoundException("Property not found with ID: " + id);
         }
 
@@ -80,11 +84,11 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertyResponse deleteProperty(Long id) {
         log.info("Deleting property with ID: {}", id);
 
-        if (!propertyRepository.existsById(String.valueOf(id))) {
+        if (!propertyRepository.existsById(id)) {
             throw new PropertyNotFoundException("Property not found with ID: " + id);
         }
 
-        propertyRepository.deleteById(String.valueOf(id));
+        propertyRepository.deleteById((id));
         log.info("Property deleted successfully with ID: {}", id);
 
         return PropertyResponse.builder()
@@ -96,10 +100,11 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(key = "#id")
     public PropertyResponse getPropertyById(Long id) {
         log.info("Fetching property with ID: {}", id);
 
-        PropertyEntity property = propertyRepository.findById(String.valueOf(id))
+        PropertyEntity property = propertyRepository.findById((id))
                 .orElseThrow(() -> new PropertyNotFoundException("Property not found with ID: " + id));
 
         PropertyDto propertyDto = PropertyMapperDto.MapoPropertyDto(property);
@@ -108,12 +113,15 @@ public class PropertyServiceImpl implements PropertyService {
                 .propertyId(id)
                 .message("Property retrieved successfully")
                 .description(propertyDto.getDescription())
+                .address(propertyDto.getAddress())
                 .rentAmount(propertyDto.getRentAmount())
+                .securityDeposit(propertyDto.getSecurityDeposit())
                 .title(propertyDto.getTitle())
                 .image(propertyDto.getImage())
                 .image2(propertyDto.getImage2())
                 .image3(propertyDto.getImage3())
                 .image4(propertyDto.getImage4())
+                .propertyIsRented(propertyDto.getPropertyIsRented())
                 .success(true)
                 .build();
     }
@@ -203,14 +211,17 @@ public class PropertyServiceImpl implements PropertyService {
                 .securityDeposit(request.getSecurityDeposit())
                 .address(request.getStreetAddress())
                 .rentalcondition(request.getRentalcondition())
+                .condition(request.getCondition()) // Added
                 .postalCode(request.getPostalCode())
                 .locationType(request.getLocationType())
                 .houseType(request.getPropertyType())
                 .quantity(request.getQuantity())
                 .availableDate(request.getAvailableDate())
                 .bedrooms(request.getBedrooms())
+                .numberOfRooms(request.getNumberOfRooms()) // Added
                 .interior(request.getInterior())
                 .surfaceArea(request.getSurfaceArea())
+                .isRented(request.getPropertyIsRented() != null ? request.getPropertyIsRented() : false) // Added
                 .image(request.getImage())
                 .image2(request.getImage2())
                 .image3(request.getImage3())
@@ -218,7 +229,38 @@ public class PropertyServiceImpl implements PropertyService {
                 .build();
     }
 
-    private void updatePropertyEntity(PropertyEntity property, PropertyRequest request) {
+
+    // Service method (also fixed error message and mapper typo)
+    @Override
+    public PropertyResponse updatePropertyStatus(Long propertyId, Boolean propertyIsRented) {
+        log.info("Updating property status for property: {}", propertyId);
+       PropertyEntity property = propertyRepository.findById(propertyId).get();
+
+       if(property == null) {
+           throw new PropertyNotFoundException("Property not found" + propertyId);
+       }
+       property.setRented(propertyIsRented);
+       PropertyEntity updatedProperty = propertyRepository.save(property);
+
+       PropertyDto propertyDto = PropertyMapperDto.MapoPropertyDto(updatedProperty);
+        return PropertyResponse.builder()
+                .propertyId(propertyId)
+                .message("Property retrieved successfully")
+                .description(propertyDto.getDescription())
+                .address(propertyDto.getAddress())
+                .rentAmount(propertyDto.getRentAmount())
+                .securityDeposit(propertyDto.getSecurityDeposit())
+                .title(propertyDto.getTitle())
+                .image(propertyDto.getImage())
+                .image2(propertyDto.getImage2())
+                .image3(propertyDto.getImage3())
+                .image4(propertyDto.getImage4())
+                .propertyIsRented(propertyDto.getPropertyIsRented())
+                .success(true)
+                .build();
+    }
+
+     private void updatePropertyEntity(PropertyEntity property, PropertyRequest request) {
         property.setTitle(request.getTitle());
         property.setDescription(request.getDescription());
         property.setRentAmount(request.getRentAmount());
@@ -249,6 +291,7 @@ public class PropertyServiceImpl implements PropertyService {
                 .address(property.getAddress())
                 .rentalcondition(property.getRentalcondition())
                 .condition(property.getCondition())
+                .propertyIsRented(property.isRented())
                 .postalCode(property.getPostalCode())
                 .locationType(property.getLocationType())
                 .houseType(property.getHouseType())

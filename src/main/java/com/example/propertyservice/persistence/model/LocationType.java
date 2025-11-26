@@ -8,6 +8,7 @@ public enum LocationType {
     HELMOND,
     BEST,
     WEET,
-    BUDEL
+    BUDEL,
+
 
 }

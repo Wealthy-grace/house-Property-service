@@ -2,6 +2,7 @@ package com.example.propertyservice.business;
 
 
 
+import com.example.propertyservice.business.impl.PropertyServiceImpl;
 import com.example.propertyservice.domain.dto.PropertyDto;
 import com.example.propertyservice.domain.request.PropertyRequest;
 import com.example.propertyservice.domain.response.PropertyResponse;
@@ -251,7 +252,7 @@ public class PropertyServiceIntegrationTest {
         assertEquals(existingProperty.getId(), response.getPropertyId());
 
         // Verify the property was actually updated in the database
-        PropertyEntity updatedProperty = propertyRepository.findById(String.valueOf(existingProperty.getId())).orElse(null);
+        PropertyEntity updatedProperty = propertyRepository.findById(existingProperty.getId()).orElse(null);
         assertNotNull(updatedProperty);
         assertEquals("Updated Property", updatedProperty.getTitle());
     }
@@ -282,7 +283,7 @@ public class PropertyServiceIntegrationTest {
     @Test
     void deleteProperty_Success() {
         Long propertyId = existingProperty.getId();
-        assertTrue(propertyRepository.existsById(String.valueOf(propertyId)));
+        assertTrue(propertyRepository.existsById(propertyId));
 
         PropertyResponse response = propertyService.deleteProperty(propertyId);
 
@@ -290,7 +291,7 @@ public class PropertyServiceIntegrationTest {
         assertEquals("Property deleted successfully", response.getMessage());
         assertTrue(response.isSuccess());
         assertEquals(propertyId, response.getPropertyId());
-        assertFalse(propertyRepository.existsById(String.valueOf(propertyId)));
+        assertFalse(propertyRepository.existsById(propertyId));
     }
 
     @Test

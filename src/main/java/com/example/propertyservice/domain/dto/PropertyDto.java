@@ -40,8 +40,8 @@ public class PropertyDto {
     private String availableDate;
     private Integer bedrooms;
     private String interior;
-
     private String surfaceArea;
+    private  Boolean propertyIsRented;
     private String image;
 
     private String image2;

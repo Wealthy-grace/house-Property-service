@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface PropertyRepository extends JpaRepository<PropertyEntity, String> {
+public interface PropertyRepository extends JpaRepository<PropertyEntity, Long> {
 
 
     // Find by location type

@@ -3,6 +3,7 @@ package com.example.propertyservice.business;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+import com.example.propertyservice.business.impl.PropertyServiceImpl;
 import com.example.propertyservice.business.mapper.PropertyMapperDto;
 import com.example.propertyservice.domain.dto.PropertyDto;
 import com.example.propertyservice.domain.request.PropertyRequest;
@@ -27,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -186,7 +186,7 @@ public class PropertyServiceImplTest {
     @Test
     void updateProperty_Success() {
         // Arrange
-        when(propertyRepository.existsById("1")).thenReturn(true);
+        when(propertyRepository.existsById(1L)).thenReturn(true);
 
         try (MockedStatic<PropertyMapperDto> mockedMapper = mockStatic(PropertyMapperDto.class)) {
             mockedMapper.when(() -> PropertyMapperDto.MapPropertyEntity(propertyRequest))
@@ -208,7 +208,7 @@ public class PropertyServiceImplTest {
     @Test
     void updateProperty_PropertyNotFound_ThrowsException() {
         // Arrange
-        when(propertyRepository.existsById("999")).thenReturn(false);
+        when(propertyRepository.existsById(999L)).thenReturn(false);
 
         // Act & Assert
         PropertyNotFoundException exception = assertThrows(
@@ -222,7 +222,7 @@ public class PropertyServiceImplTest {
     @Test
     void deleteProperty_Success() {
         // Arrange
-        when(propertyRepository.existsById("1")).thenReturn(true);
+        when(propertyRepository.existsById(1L)).thenReturn(true);
 
         // Act
         PropertyResponse response = propertyService.deleteProperty(1L);
@@ -232,13 +232,13 @@ public class PropertyServiceImplTest {
         assertEquals("Property deleted successfully", response.getMessage());
         assertTrue(response.isSuccess());
         assertEquals(1L, response.getPropertyId());
-        verify(propertyRepository).deleteById("1");
+        verify(propertyRepository).deleteById(1L);
     }
 
     @Test
     void deleteProperty_PropertyNotFound_ThrowsException() {
         // Arrange
-        when(propertyRepository.existsById("999")).thenReturn(false);
+        when(propertyRepository.existsById(999l)).thenReturn(false);
 
         // Act & Assert
         PropertyNotFoundException exception = assertThrows(
@@ -252,7 +252,7 @@ public class PropertyServiceImplTest {
     @Test
     void getPropertyById_Success() {
         // Arrange
-        when(propertyRepository.findById("1")).thenReturn(Optional.of(propertyEntity));
+        when(propertyRepository.findById(1L)).thenReturn(Optional.of(propertyEntity));
 
         try (MockedStatic<PropertyMapperDto> mockedMapper = mockStatic(PropertyMapperDto.class)) {
             mockedMapper.when(() -> PropertyMapperDto.MapoPropertyDto(propertyEntity))
@@ -273,7 +273,7 @@ public class PropertyServiceImplTest {
     @Test
     void getPropertyById_PropertyNotFound_ThrowsException() {
         // Arrange
-        when(propertyRepository.findById("999")).thenReturn(Optional.empty());
+        when(propertyRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
         PropertyNotFoundException exception = assertThrows(

@@ -46,11 +46,13 @@ public class PropertyEntity {
 
     private Integer bedrooms;
 
-
+    private  Integer numberOfRooms;
     @Column(name = "interior", columnDefinition = "TEXT")
     private String interior;
 
     private String surfaceArea;
+
+    private  boolean  isRented;
     @Column(name = "image", length = 1000)
     private String image;
 

@@ -17,17 +17,29 @@ public class PropertyResponse {
 
     private String message;
 
-    private boolean success;
+    private  boolean success;
 
     private String title;
 
     private String description;
 
+    private String address;
+    private String providerName;
+    private BigDecimal securityDeposit;
     private BigDecimal rentAmount;
     private String image;
-    private String image4;
     private String image2;
-
     private String image3;
+    private String image4;
+    private Boolean propertyIsRented;
+
+//    public static PropertyResponse success(String message, PropertyResponse property) {
+//        return PropertyResponse.builder()
+//                .success(true)
+//                .message(message)
+//                //.property(property)
+//                //.timestamp(LocalDateTime.now())
+//                .build();
+//    }
 
 }

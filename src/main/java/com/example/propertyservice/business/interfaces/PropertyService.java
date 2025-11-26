@@ -3,6 +3,7 @@ package com.example.propertyservice.business.interfaces;
 import com.example.propertyservice.domain.dto.PropertyDto;
 import com.example.propertyservice.domain.request.PropertyRequest;
 import com.example.propertyservice.domain.response.PropertyResponse;
+import com.example.propertyservice.persistence.model.PropertyEntity;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,7 +14,11 @@ public interface PropertyService {
 
     PropertyResponse updateProperty(PropertyRequest propertyRequest, Long id);
 
+    PropertyResponse updatePropertyStatus(Long propertyId, Boolean propertyIsRented);
+
     PropertyResponse deleteProperty(Long id);
+
+
 
     PropertyResponse getPropertyById(Long id);
 
