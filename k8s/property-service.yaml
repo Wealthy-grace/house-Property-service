@@ -27,15 +27,25 @@ data:
 
   # OAuth2 Configuration - Accept tokens from both internal and external URLs
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://localhost:8080/realms/friendly-housing"
-  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://keycloak:8080/realms/friendly-housing/protocol/openid-connect/certs"
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://keycloak.student-housing.svc.cluster.local:8080/realms/friendly-housing/protocol/openid-connect/certs"
+
+  #  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://keycloak:8080/realms/friendly-housing/protocol/openid-connect/certs"
 
   # Make JWT configuration more lenient for startup
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI_LAZY: "true"
 
   # Keycloak Admin Client Configuration
-  KEYCLOAK_AUTH_SERVER_URL: "http://keycloak:8080"
+  # ========================================================================
+  # Keycloak Admin Client Configuration (for KeycloakUserService.java)
+  # ========================================================================
+  KEYCLOAK_AUTH_SERVER_URL: "http://keycloak.student-housing.svc.cluster.local:8080"
   KEYCLOAK_REALM: "friendly-housing"
-  KEYCLOAK_RESOURCE: "user-service"
+  KEYCLOAK_RESOURCE: "property-service"
+  KEYCLOAK_ADMIN_CLIENT_ID: "property-service"
+  KEYCLOAK_ADMIN_REALM: "friendly-housing"
+#  KEYCLOAK_AUTH_SERVER_URL: "http://keycloak:8080"
+#  KEYCLOAK_REALM: "friendly-housing"
+#  KEYCLOAK_RESOURCE: "property-service"
 
   LOGGING_LEVEL_ROOT: "INFO"
   SPRING_CLOUD_COMPATIBILITY_VERIFIER_ENABLED: "false"
@@ -50,7 +60,7 @@ type: Opaque
 stringData:
   SPRING_DATASOURCE_PASSWORD: "Server123@"
   # TODO: Replace with actual client secret from Keycloak
-  KEYCLOAK_CREDENTIALS_SECRET: "w17mfIu8cNiHihx8hYZEHLkEkjEA1BIf"
+  KEYCLOAK_CREDENTIALS_SECRET: "GibFLUkehKBdiEiDXTbasBn7N7GaWqAa"
 
 ---
 apiVersion: v1

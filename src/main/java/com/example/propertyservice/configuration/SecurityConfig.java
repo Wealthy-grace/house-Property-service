@@ -130,12 +130,7 @@ public class SecurityConfig {
         return converter;
     }
 
-    /**
-     * Extracts authorities/roles from Keycloak JWT token
-     *
-     * FIXED: No duplicate ROLE_ prefixes!
-     * Maps Keycloak roles to Spring Security authorities correctly
-     */
+
     @Bean
     public Converter<Jwt, Collection<GrantedAuthority>> jwtGrantedAuthoritiesConverter() {
         return jwt -> {
@@ -161,12 +156,7 @@ public class SecurityConfig {
      * Map a Keycloak role to a Spring Security GrantedAuthority
      *
      * Prevents duplicate ROLE_ prefixes:
-     * - "ROLE_ADMIN" → "ROLE_ADMIN" (not "ROLE_ROLE_ADMIN")
-     * - "ROLE_PROPERTY_MANAGER" → "ROLE_PROPERTY_MANAGER"
-     * - "default-roles-friendly-housing" → "default-roles-friendly-housing" (no prefix)
-     * - "offline_access" → "offline_access" (no prefix)
-     * - "ADMIN" → "ROLE_ADMIN" (adds prefix)
-     * - "PROPERTY_MANAGER" → "ROLE_PROPERTY_MANAGER" (adds prefix)
+
      */
     private GrantedAuthority mapRoleToAuthority(String role) {
         // If role already starts with "ROLE_", use it as-is
